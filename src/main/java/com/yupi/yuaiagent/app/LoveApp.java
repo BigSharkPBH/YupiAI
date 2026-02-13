@@ -1,13 +1,12 @@
 package com.yupi.yuaiagent.app;
 
 import com.yupi.yuaiagent.advisor.MyLoggerAdvisor;
-import com.yupi.yuaiagent.chatmemory.FileBasedChatMemory;
+import com.yupi.yuaiagent.chatmemory.DatabaseChatMemory;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.api.Advisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.vectorstore.VectorStore;
@@ -34,16 +33,20 @@ public class LoveApp {
      *
      * @param descopeChatModel
      */
-    public LoveApp(ChatModel descopeChatModel) {
+    public LoveApp(ChatModel descopeChatModel,DatabaseChatMemory databaseChatMemory) {
         //基于内存的对话记忆
 //        ChatMemory chatMemory = new InMemoryChatMemory();
-        // 初始化基于文件的对话记忆
+//         初始化基于文件的对话记忆
         String fileDir = System.getProperty("user.dir") + "/chat-menmory";
-        ChatMemory chatMemory = new FileBasedChatMemory(fileDir);
+//        ChatMemory chatMemory = new FileBasedChatMemory(fileDir);
         chatClient = ChatClient.builder(descopeChatModel)
                 .defaultSystem(SYSTEM_PROMPT)
                 .defaultAdvisors(
-                        new MessageChatMemoryAdvisor(chatMemory),
+                        //文件对话记忆
+//                        new MessageChatMemoryAdvisor(chatMemory),
+                        //mysql对话记忆
+                        new MessageChatMemoryAdvisor(databaseChatMemory),
+                        //日志拦截器 可按需开启
 //                        new SimpleLoggerAdvisor()
                         //自定义拦截器 可按需开启
                         new MyLoggerAdvisor()
@@ -52,6 +55,9 @@ public class LoveApp {
                 )
                 .build();
     }
+
+
+
 
     /**
      * AI 基础对话（支持多轮记忆）

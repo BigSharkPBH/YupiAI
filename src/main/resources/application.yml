@@ -3,6 +3,22 @@ spring:
     name: yu-ai-agent
   profiles:
     active: local
+  # 数据库连接配置（核心）
+  datasource:
+    # MySQL 驱动类（Spring Boot 3.x 用这个，2.x 用 com.mysql.cj.jdbc.Driver）
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 连接池配置（Hikari 是 Spring Boot 默认，性能最优）
+    hikari:
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 20
+      # 连接超时时间（毫秒）
+      connection-timeout: 30000
+      # 连接测试语句
+      connection-test-query: SELECT 1
+
+
 server :
     port: 8123
     servlet:
